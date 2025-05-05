@@ -1,0 +1,16 @@
+# Ignore git files
+.git
+
+# Ignore temporary files (e.g., build artifacts)
+*.tmp
+*~
+
+# Ignore log files
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore environment files
+*.env
