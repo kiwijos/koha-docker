@@ -36,9 +36,12 @@ RUN apt-get update && apt-get install -y \
 # - Enable the necessary modules
 # - Disable the default site
 # - Listen on port 8080 and 8081
+# - Set the server name to suppress warnings
 RUN a2enmod rewrite cgi headers proxy_http \
     && a2dissite 000-default \ 
-    && echo "Listen 8081\nListen 8080" > /etc/apache2/ports.conf
+    && echo "Listen 8081\nListen 8080" > /etc/apache2/ports.conf \
+    && echo "ServerName localhost" | tee /etc/apache2/conf-available/fqdn.conf \ 
+    && a2enconf fqdn
 
 # Add our custom configuration files and scripts
 COPY --chmod=755 docker /docker

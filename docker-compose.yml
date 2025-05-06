@@ -2,6 +2,8 @@ services:
   mariadb:
     image: mariadb:${MARIADB_VERSION:-10.6}
     restart: ${RESTART_POLICY:-no}
+    volumes:
+      - mariadb-storage:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
@@ -29,3 +31,6 @@ services:
         condition: service_started
     env_file:
       - default.env
+
+volumes:
+  mariadb-storage:
