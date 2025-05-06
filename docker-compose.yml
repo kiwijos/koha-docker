@@ -31,6 +31,18 @@ services:
       - --memory-limit=64
       - --threads=4
 
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION:-latest}
+    restart: ${RESTART_POLICY:-no}
+    volumes:
+      - './rabbitmq-plugins:/etc/rabbitmq/enabled_plugins'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   koha:
     build:
       context: ./koha

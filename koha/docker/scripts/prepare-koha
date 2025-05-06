@@ -13,6 +13,14 @@ export MYSQL_PASSWORD=${MYSQL_PASSWORD:-$(pwgen -s 15 1)}
 export ZEBRA_MARC_FORMAT=${ZEBRA_MARC_FORMAT:-marc21}
 export MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
 
+# RabbitMQ (Message Broker) settings
+export MB_HOST=${MB_HOST:-rabbitmq}
+export MB_PORT=${MB_PORT:-61613} # Stomp TCP listens on 61613 by default
+export MB_USER=${MB_USER:-guest}
+export MB_PASS=${MB_PASS:-guest}
+
+MB_PARAMS="--mb-host ${MB_HOST} --mb-port ${MB_PORT} --mb-user ${MB_USER} --mb-pass ${MB_PASS}"
+
 echo "Running startup script..."
 
 # Fill in the values in our configuration file and write it to the place Koha reads it from
@@ -32,7 +40,7 @@ source /usr/share/koha/bin/koha-functions.sh
 if ! is_instance ${KOHA_INSTANCE} || [ ! -f "/etc/koha/sites/${KOHA_INSTANCE}/koha_conf.xml" ]
   then
       echo "Executing koha-create for instance ${KOHA_INSTANCE}"
-      koha-create --use-db ${KOHA_INSTANCE} | true
+      koha-create ${MB_PARAMS} --use-db ${KOHA_INSTANCE} | true
   else
       echo "Creating directories structure"
       koha-create-dirs ${KOHA_INSTANCE}
