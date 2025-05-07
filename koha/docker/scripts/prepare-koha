@@ -65,4 +65,4 @@ fi
 sleep 2
 
 # Start Apache in the foreground
-apache2ctl -D FOREGROUND
+exec apache2ctl -DFOREGROUND "$@"
