@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/command/with-contenv bash
 
 set -e
 
@@ -48,21 +48,11 @@ fi
 
 service apache2 stop
 
+# Koha gets grumpy if the OPAC and intranet logs don't exist
+touch /var/log/koha/${KOHA_INSTANCE}/opac-error.log /var/log/koha/${KOHA_INSTANCE}/intranet-error.log
+
 # Give the Koha instance user ownership of the log directory to avoid permission errors
 chown -R ${KOHA_INSTANCE}-koha:${KOHA_INSTANCE}-koha /var/log/koha/${KOHA_INSTANCE}/
 
 # Enable and start the Plack server for the Koha instance
 koha-plack --enable ${KOHA_INSTANCE}
-koha-plack --start ${KOHA_INSTANCE}
-
-# Make sure the plack socket directory exists with proper permissions
-if [ ! -d "/var/run/koha/${KOHA_INSTANCE}" ]; then
-    mkdir -p /var/run/koha/${KOHA_INSTANCE}
-    chown -R ${KOHA_INSTANCE}-koha:${KOHA_INSTANCE}-koha /var/run/koha/${KOHA_INSTANCE}
-fi
-
-# Wait a moment for Plack to initialize
-sleep 2
-
-# Start Apache in the foreground
-exec apache2ctl -DFOREGROUND "$@"

@@ -6,13 +6,28 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Following a version number is recommended 
 ARG KOHA_VERSION=24.11
 
+# S6 Overlay is a process supervisor that
+# allows us to manage multiple processes in the container
+ARG S6_OVERLAY_VERSION=3.2.0.2
+ARG S6_OVERLAY_ARCH=x86_64
+
 # Initial setup (some packages are needed to get the keys etc.)
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg2 \
     apt-transport-https \
+    xz-utils \
     && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
+
+# Install S6 Overlay
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz /tmp
+
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz \
+    && tar -C / -Jxpf /tmp/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz \
+    && rm /tmp/s6-overlay-noarch.tar.xz \
+    && rm /tmp/s6-overlay-${S6_OVERLAY_ARCH}.tar.xz
 
 # Get keys to allow the package manager to securely
 # download and verify packages from the Koha repository
@@ -44,10 +59,12 @@ RUN a2enmod rewrite cgi headers proxy_http \
     && a2enconf fqdn
 
 # Add our custom configuration files and scripts
-COPY --chmod=755 docker /docker
+COPY --chown=0:0 --chmod=755 rootfs/ /
+COPY --chown=0:0 --chmod=755 docker /docker
 
 WORKDIR /docker
 
 EXPOSE 8080 8081
 
-ENTRYPOINT [ "./scripts/prepare-koha" ]
+# Run S6 Overlay init process
+ENTRYPOINT ["/init"]

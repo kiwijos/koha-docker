@@ -1,0 +1,12 @@
+#!/command/execlineb -P
+with-contenv
+
+# Redirect stderr to stdout for logging
+fdmove -c 2 1
+
+trap { 
+  SIGTERM { apache2ctl stop } 
+  SIGHUP  { apache2ctl graceful }
+}
+
+apache2ctl -D "FOREGROUND"

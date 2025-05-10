@@ -1,0 +1,24 @@
+#!/command/execlineb -P
+with-contenv
+
+# Redirect stderr to stdout for logging
+fdmove -c 2 1
+
+importas KOHA_INSTANCE KOHA_INSTANCE
+
+# Define and export essential Koha environment variables
+export PERL5LIB /usr/share/koha/lib
+export KOHA_CONF /etc/koha/sites/${KOHA_INSTANCE}/koha-conf.xml
+export KOHA_HOME /usr/share/koha
+
+/usr/bin/starman \
+    -M FindBin \
+    --max-requests 50 \
+    --workers 2 \
+    -E deployment \
+    --user=${KOHA_INSTANCE}-koha \
+    --group=${KOHA_INSTANCE}-koha \
+    --socket /var/run/koha/${KOHA_INSTANCE}/plack.sock \
+    --access-log /var/log/koha/${KOHA_INSTANCE}/plack.log \
+    --error-log /var/log/koha/${KOHA_INSTANCE}/plack-error.log \
+    "/etc/koha/plack.psgi"

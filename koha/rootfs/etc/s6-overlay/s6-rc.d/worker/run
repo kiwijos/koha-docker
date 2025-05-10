@@ -1,0 +1,17 @@
+#!/command/execlineb -P
+with-contenv
+
+fdmove -c 2 1
+
+multisubstitute
+{
+  importas KOHA_INSTANCE KOHA_INSTANCE
+}
+
+# Define and export essential Koha environment variables
+export PERL5LIB /usr/share/koha/lib
+export KOHA_CONF /etc/koha/sites/${KOHA_INSTANCE}/koha-conf.xml
+export KOHA_HOME /usr/share/koha
+
+koha-shell ${KOHA_INSTANCE} -c \
+  /usr/share/koha/bin/workers/background_jobs_worker.pl
