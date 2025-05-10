@@ -3,10 +3,7 @@ with-contenv
 
 fdmove -c 2 1
 
-multisubstitute
-{
-  importas KOHA_INSTANCE KOHA_INSTANCE
-}
+importas KOHA_INSTANCE KOHA_INSTANCE
 
 # Define and export essential Koha environment variables
 export PERL5LIB /usr/share/koha/lib
