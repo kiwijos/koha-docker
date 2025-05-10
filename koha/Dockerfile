@@ -42,7 +42,6 @@ RUN apt-get update && apt-get install -y \
     apache2 \
     libapache2-mpm-itk \
     && /etc/init.d/koha-core stop \
-    && rm -rf /usr/share/koha/misc/translator/po/* \
     && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 

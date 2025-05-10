@@ -12,6 +12,7 @@ export MYSQL_SERVER=${MYSQL_SERVER:-mariadb}
 export MYSQL_PASSWORD=${MYSQL_PASSWORD:-$(pwgen -s 15 1)}
 export ZEBRA_MARC_FORMAT=${ZEBRA_MARC_FORMAT:-marc21}
 export MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
+export KOHA_LANGS=${KOHA_LANGS:-sv-SE}
 
 # RabbitMQ (Message Broker) settings
 export MB_HOST=${MB_HOST:-rabbitmq}
@@ -47,6 +48,21 @@ if ! is_instance ${KOHA_INSTANCE} || [ ! -f "/etc/koha/sites/${KOHA_INSTANCE}/ko
 fi
 
 service apache2 stop
+
+IFS=' ' read -ra LANGS <<< "${KOHA_LANGS}"
+for lang in "${LANGS[@]}"; do
+    if ! koha-translate --list | grep -q "^${lang}$"; then
+        if koha-translate --check "${lang}"; then
+            echo "Installing language: ${lang}"
+            koha-translate --install "${lang}"
+        else
+            echo "Language ${lang} is not available for installation. No such .PO file."
+            echo "Please check the list of available languages with koha-translate --list --available"
+        fi
+    else
+        echo "Language ${lang} is already installed"
+    fi
+done
 
 # Koha gets grumpy if the OPAC and intranet logs don't exist
 touch /var/log/koha/${KOHA_INSTANCE}/opac-error.log /var/log/koha/${KOHA_INSTANCE}/intranet-error.log
