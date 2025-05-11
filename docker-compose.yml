@@ -13,10 +13,7 @@ services:
     ports:
       - '${MYSQL_SERVER_PORT:-3306}:${MYSQL_SERVER_PORT:-3306}'
     env_file:
-      - path: ./default.env
-        required: true
-      - path: ./override.env
-        required: false
+      - .env
 
   memcached:
     image: memcached:${MEMCACHED_VERSION:-latest}
@@ -33,11 +30,6 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
-    env_file:
-      - path: ./default.env
-        required: true
-      - path: ./override.env
-        required: false
 
   rabbitmq:
     image: rabbitmq:${RABBITMQ_VERSION:-latest}
@@ -50,11 +42,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    env_file:
-      - path: ./default.env
-        required: true
-      - path: ./override.env
-        required: false
 
   koha:
     build:
@@ -75,10 +62,7 @@ services:
       rabbitmq:
         condition: service_healthy
     env_file:
-      - path: ./default.env
-        required: true
-      - path: ./override.env
-        required: false
+      - .env
 
 volumes:
   mariadb-storage:

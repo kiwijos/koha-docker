@@ -46,9 +46,9 @@ The setup uses S6 Overlay for process supervision within the Koha container, all
 
 ## Configuration
 
-All configuration options are available in the [`default.env` file](default.env). You can modify this file directly or create a custom `.env` file to override specific settings. The current compose file will automatically pick up a file called `override.env` if it exists.
+All configuration options are available in the [`.env` file](.env). You can modify this file directly or create a custom `.env` file to override specific settings.
 
-Experienced users may also want to set environment variables temporarily with the `--env` flag.
+Some users may also want to set environment variables temporarily with the `--env` flag for quick testing.
 
 ### Key Configuration Options
 
